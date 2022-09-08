@@ -108,7 +108,7 @@ export class Parser {
       return new Lambda(argument, body)
     }
 
-    throw "Was expecting either `.` or some Identifier, but got " + this.top().type
+    throw "Was expecting either `.` or some Identifier, but got " + this.top().value
   }
 
   /**
@@ -186,7 +186,7 @@ export class Parser {
       return expr
     }
 
-    throw "Was expecting one of: Number, Operator, Identifier or `(` but got " + this.top().type
+    throw "Was expecting one of: Number, Operator, Identifier or `(` but got " + this.top().value
   }
 
   /**
