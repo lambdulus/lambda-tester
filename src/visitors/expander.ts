@@ -5,18 +5,12 @@ import { Parser } from "../parser/parser"
 
 
 // the goal is to transform the tree in such a way, that all numerals and macros are fully expanded
-export class MacroExpander extends ASTVisitor {
-  private expression : string = ''
-
+export class DeepExpander extends ASTVisitor {
   constructor (
     public tree : AST,
   ) {
     super()
     this.tree.visit(this)
-  }
-
-  print () : string {
-    return this.expression
   }
 
   onApplication(application: Application): void {
