@@ -3,7 +3,7 @@ import { FreeVarsFinder } from "../visitors/freevarsfinder"
 import { Binary, AST, Child, Application, Lambda, ChurchNumeral, Macro, Variable } from "../ast"
 import { BoundingFinder } from "../visitors/boundingfinder"
 import { constructFor, Reducer } from "../reducers"
-import { ASTReduction, Beta, Alpha, Expansion, None } from "../reductions"
+import { ASTReduction, Beta, Alpha, Expansion, None, Eta } from "../reductions"
 import { OptimizeEvaluator } from "./optimizeevaluator"
 
 
@@ -62,7 +62,7 @@ export class NormalEvaluator extends ASTVisitor {
 
       application.left.visit(this)
 
-      if (this.nextReduction instanceof None) {
+      if (this.nextReduction instanceof None || this.nextReduction instanceof Eta) {
         this.parent = application
         this.child = Child.Right
 
@@ -72,6 +72,20 @@ export class NormalEvaluator extends ASTVisitor {
   }
   
   onLambda (lambda : Lambda) : void {
+    if (lambda.right instanceof Application
+        &&
+        lambda.right.right instanceof Variable
+        &&
+        lambda.right.right.name() === lambda.left.name()
+    ) {
+      const freeVarsFinder : FreeVarsFinder = new FreeVarsFinder(lambda.right.left)
+      const freeVars : Set<string> = freeVarsFinder.freeVars
+      
+      if ( ! freeVars.has(lambda.left.name())) {
+        this.nextReduction = new Eta(this.parent, this.child, lambda.right.left)
+      }
+    }
+
     this.parent = lambda
     this.child = Child.Right
 
