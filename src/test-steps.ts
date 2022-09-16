@@ -39,9 +39,8 @@ const lines_student : string[] = lines_student_
     .filter(str => str.length)
     .filter(str => {
       const m = str.match(/\s*/g)
-      if (m) { return m[0] === str } else { return true }
+      if (m) { return m[0] !== str } else { return true }
     })
-
 
 // naparsovat prvni radek reference E0
 const E0 : AST = Parser.parse(tokenize(ref_expr, codestyle), macromap)
@@ -67,7 +66,7 @@ if ( ! equal(E0_expanded, S0_expanded)) {
   // pokud se lisi - error out --> vypsat chybu na error vystup
   console.error(`Your first step is not equivalent to the assignment!`)
   console.error(`Here is your first step: ${print(S0)}`)
-  console.error(`Here is the assignment: ${print(E0)}`)
+  console.error(`Here is the assignment:  ${print(E0)}`)
 
   exit(3)
 }
@@ -84,10 +83,15 @@ while (STEPS) {
   const evaluator : Evaluator = new_evaluator(reference_prev)
 
   if (lines_student.length === 0) {
-    // student skoncil, ale je treba se ujistit, ze reference ma taky None
+    // student skoncil, ale je treba se ujistit, ze reference ma taky None, nebo Etu - tu nebereme nutne jako nutnou udelat
     if (evaluator.nextReduction instanceof None) {
       // pokud jo --> OK, skoncime
       exit(0)
+    }
+    else if (evaluator.nextReduction instanceof Eta) {
+      // student uz nema kroky, ale evaluator jeste ma
+      console.log(`Your solution ends too soon. The expression is not in the Normal Form yet. Hint: Maybe you need to do eta reduction?`)
+      exit(1)
     }
     else {
       // student uz nema kroky, ale evaluator jeste ma
@@ -103,7 +107,7 @@ while (STEPS) {
 
 
   // pokud reference nema zadny dalsi krok, ale student ma
-  if (evaluator.nextReduction instanceof None && lines_student.length) {
+  if (evaluator.nextReduction instanceof None) {
     // tak jenom pro jistotu zkontroluju, ze to neni jenom alpha conversion
     // pokud ano, posunu se dal, pro pripad, ze by jich tady bylo vic
     if (equal(expand(student_prev), student_expanded)) {
@@ -136,7 +140,7 @@ while (STEPS) {
 
     // v tenhle moment, ja uz nemam co delat, nejde udelat ani Etu, ale student porad ma nejaky krok, ktery neni jenom alpha
     // to je jeho chyba!
-    console.log(`Your solution contains some step(s) even after the evaluation reached the Normal Form.`)
+    console.log(`Your solution contains some step(s) even after the evaluation reaches the Normal Form. It starts with the step "${student_next_str}".`)
     exit(1)
 
   }
@@ -179,15 +183,18 @@ while (STEPS) {
   }
 
   // pokud reference nasla alpha nebo beta redex:
-  if (evaluator.nextReduction instanceof Alpha || evaluator.nextReduction instanceof Beta) {
+  if (evaluator.nextReduction instanceof Alpha || evaluator.nextReduction instanceof Beta || evaluator.nextReduction instanceof Eta) {
     // stroj dela alpha conversion nebo beta reduction
     // provedu ji, expanduju
     const next_ref : AST = evaluator.perform()
     const NR_expanded : AST = expand(next_ref)
 
+    // console.log(`Reference Expanded "${NR_expanded}"`)
+    // console.log()
+
     // provedu nasledujici krok pro referenci
     // porovnam novy stav reference a novy krok studenta
-    if (equal(NR_expanded, student_next)) {
+    if (equal(NR_expanded, student_expanded)) {
       // pokud jsou stejne --> OK, jdu dal
       reference_prev = next_ref
       student_prev = student_next
@@ -240,6 +247,8 @@ while (STEPS) {
       exit(1)
     }
   }
+  console.error(`Failure of the testing sub-system.`)
+  exit(42)
 }
 
 

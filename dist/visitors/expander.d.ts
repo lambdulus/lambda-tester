@@ -1,10 +1,8 @@
 import { AST, Application, Lambda, ChurchNumeral, Macro, Variable } from "../ast";
 import { ASTVisitor } from ".";
-export declare class MacroExpander extends ASTVisitor {
+export declare class DeepExpander extends ASTVisitor {
     tree: AST;
-    private expression;
     constructor(tree: AST);
-    print(): string;
     onApplication(application: Application): void;
     onChurchNumeralBody(n: number): AST;
     onChurchNumeralHeader(tree: AST): AST;
