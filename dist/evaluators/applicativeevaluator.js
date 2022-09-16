@@ -14,6 +14,7 @@ class ApplicativeEvaluator extends visitors_1.ASTVisitor {
         this.parent = null;
         this.child = null;
         this.nextReduction = new reductions_1.None;
+        this.nextReduction = new reductions_1.None;
         this.tree.visit(this);
         // if (this.nextReduction instanceof None) {
         //   const normal : OptimizeEvaluator = new OptimizeEvaluator(tree)
@@ -33,7 +34,7 @@ class ApplicativeEvaluator extends visitors_1.ASTVisitor {
             this.parent = application;
             this.child = ast_1.Child.Right;
             application.right.visit(this);
-            if (this.nextReduction instanceof reductions_1.None) {
+            if (this.nextReduction instanceof reductions_1.None || this.nextReduction instanceof reductions_1.Eta) {
                 // argument is in normal form
                 const freeVarsFinder = new freevarsfinder_1.FreeVarsFinder(application.right);
                 const freeVars = freeVarsFinder.freeVars;
@@ -62,7 +63,7 @@ class ApplicativeEvaluator extends visitors_1.ASTVisitor {
             this.parent = application;
             this.child = ast_1.Child.Right;
             application.right.visit(this);
-            if (this.nextReduction instanceof reductions_1.None) {
+            if (this.nextReduction instanceof reductions_1.None || this.nextReduction instanceof reductions_1.Eta) {
                 this.parent = application;
                 this.child = ast_1.Child.Left;
                 application.left.visit(this);
@@ -70,8 +71,17 @@ class ApplicativeEvaluator extends visitors_1.ASTVisitor {
         }
     }
     onLambda(lambda) {
-        // TODO: just experimenting
-        // this.nextReduction = new None
+        if (lambda.right instanceof ast_1.Application
+            &&
+                lambda.right.right instanceof ast_1.Variable
+            &&
+                lambda.right.right.name() === lambda.left.name()) {
+            const freeVarsFinder = new freevarsfinder_1.FreeVarsFinder(lambda.right.left);
+            const freeVars = freeVarsFinder.freeVars;
+            if (!freeVars.has(lambda.left.name())) {
+                this.nextReduction = new reductions_1.Eta(this.parent, this.child, lambda.right.left);
+            }
+        }
         this.parent = lambda;
         this.child = ast_1.Child.Right;
         lambda.body.visit(this);
@@ -83,7 +93,7 @@ class ApplicativeEvaluator extends visitors_1.ASTVisitor {
         this.nextReduction = new reductions_1.Expansion(this.parent, this.child, macro);
     }
     onVariable(variable) {
-        this.nextReduction = new reductions_1.None;
+        // this.nextReduction = new None
     }
     perform() {
         this.reducer.perform();

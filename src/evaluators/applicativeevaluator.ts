@@ -18,6 +18,7 @@ export class ApplicativeEvaluator extends ASTVisitor {
     public readonly tree : AST
   ) {
     super()
+    this.nextReduction = new None
     this.tree.visit(this)
 
     // if (this.nextReduction instanceof None) {
@@ -120,7 +121,7 @@ export class ApplicativeEvaluator extends ASTVisitor {
   }
 
   onVariable (variable : Variable) : void {
-    this.nextReduction = new None
+    // this.nextReduction = new None
   }
 
   perform () : AST {

@@ -18,6 +18,7 @@ export class NormalEvaluator extends ASTVisitor {
     public readonly tree : AST
   ) {
     super()
+    this.nextReduction = new None
     this.tree.visit(this)
 
     // if (this.nextReduction instanceof None) {
@@ -101,7 +102,7 @@ export class NormalEvaluator extends ASTVisitor {
   }
 
   onVariable (variable : Variable) : void {
-    this.nextReduction = new None
+    // this.nextReduction = new None
   }
 
   perform () : AST {

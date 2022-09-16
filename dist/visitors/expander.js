@@ -1,20 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MacroExpander = void 0;
+exports.DeepExpander = void 0;
 const ast_1 = require("../ast");
 const _1 = require(".");
 const lexer_1 = require("../lexer");
 const parser_1 = require("../parser/parser");
 // the goal is to transform the tree in such a way, that all numerals and macros are fully expanded
-class MacroExpander extends _1.ASTVisitor {
+class DeepExpander extends _1.ASTVisitor {
     constructor(tree) {
         super();
         this.tree = tree;
-        this.expression = '';
         this.tree.visit(this);
-    }
-    print() {
-        return this.expression;
     }
     onApplication(application) {
         const left = application.left;
@@ -64,4 +60,4 @@ class MacroExpander extends _1.ASTVisitor {
         this.tree = variable;
     }
 }
-exports.MacroExpander = MacroExpander;
+exports.DeepExpander = DeepExpander;
