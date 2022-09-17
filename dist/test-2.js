@@ -87,7 +87,6 @@ while (true) {
 }
 // NOW I COMPARE BOTH RESULTS
 const comparator = new comparator_1.TreeComparator([ref_root, student_root], [macromap, macromap]);
-comparator.compare();
 if (comparator.equals) {
     // everything is OK
     if (student_steps > 2 * ref_steps) {
@@ -98,7 +97,6 @@ if (comparator.equals) {
 else {
     // the results do not match!
     console.log("Your solution does not pass the test.");
-    console.log(comparator.message);
     console.log(`reference: ${printTree(ref_root)}`);
     console.log(`student: ${printTree(student_root)}`);
     (0, process_1.exit)(1);

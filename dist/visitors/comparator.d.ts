@@ -6,7 +6,6 @@ export declare class TreeComparator {
     private translator;
     equals: boolean;
     private context;
-    message: string;
     constructor(roots: Pair<AST>, macrotables: Pair<MacroMap>);
     compare(): void;
 }

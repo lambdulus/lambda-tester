@@ -8,7 +8,6 @@ class TreeComparator {
         this.macrotables = macrotables;
         this.translator = new Map();
         this.equals = true;
-        this.message = "";
         this.context = roots;
         this.compare();
     }
@@ -17,7 +16,7 @@ class TreeComparator {
         if (left instanceof index_1.Lambda && right instanceof index_1.Lambda) {
             const backup = new Map(this.translator.entries());
             this.translator.set(left.argument.name(), right.argument.name());
-            this.context = [left.right, right.right];
+            this.context = [left.body, right.body];
             this.compare();
             this.translator = backup;
         }
@@ -36,24 +35,19 @@ class TreeComparator {
             //   return
             // }
             this.equals = left.name() === right.name();
-            this.message = `${left} is not the same as ${right}`;
         }
         else if (left instanceof index_1.ChurchNumeral && right instanceof index_1.ChurchNumeral) {
             this.equals = left.name() === right.name();
-            this.message = `${left} is not the same as ${right}`;
         }
         else if (left instanceof index_1.Variable && right instanceof index_1.Variable) {
             if (this.translator.has(left.name())) {
                 this.equals = this.translator.get(left.name()) === right.name();
-                this.message = `${left} is not the same as ${right}`;
             }
             else {
                 this.equals = left.name() === right.name();
-                this.message = `${left} is not the same as ${right}`;
             }
         }
         else {
-            this.message = `${left} is not the same as ${right}`;
             this.equals = false;
         }
     }
