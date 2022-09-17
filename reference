@@ -1,1 +1,1 @@
-(λ f g x . f g (g x)) (λ g x . g x) (λ x . x) A 2 (\ e . X e)
+(λ a b . a)

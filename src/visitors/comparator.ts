@@ -8,7 +8,6 @@ export class TreeComparator {
   private translator : Map<string, string> = new Map()
   public equals : boolean = true
   private context : Pair<AST>
-  public message : string = ""
 
   constructor (readonly roots : Pair<AST>, readonly macrotables : Pair<MacroMap>) {
     this.context = roots
@@ -23,7 +22,7 @@ export class TreeComparator {
       const backup : Map<string, string> = new Map(this.translator.entries())
 
       this.translator.set(left.argument.name(), right.argument.name())
-      this.context = [ left.right, right.right ]
+      this.context = [ left.body, right.body ]
       this.compare()
 
       this.translator = backup
@@ -45,24 +44,19 @@ export class TreeComparator {
       //   return
       // }
       this.equals = left.name() === right.name()
-      this.message = `${left} is not the same as ${right}`
     }
     else if (left instanceof ChurchNumeral && right instanceof ChurchNumeral) {
       this.equals = left.name() === right.name()
-      this.message = `${left} is not the same as ${right}`
     }
-    else if (left instanceof Variable && right instanceof Variable) {
+    else if (left instanceof Variable && right instanceof Variable) {      
       if (this.translator.has(left.name())) {
         this.equals = this.translator.get(left.name()) === right.name()
-        this.message = `${left} is not the same as ${right}`
       }
       else {
         this.equals = left.name() === right.name()
-        this.message = `${left} is not the same as ${right}`
       }
     }
     else {
-      this.message = `${left} is not the same as ${right}`
       this.equals = false
     }
   }
