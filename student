@@ -1,1 +1,1 @@
-(λ t f . t)
+(λ f n . ZERO n 1 (* n (SUCC n)))
