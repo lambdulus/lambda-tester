@@ -70,7 +70,7 @@ const [ref_head, ...ref_tail] = ref_app_arr;
 const ref_app = ref_tail.reduce((lambda, arg) => new ast_1.Application(lambda, arg), ref_head);
 // console.log(printTree(student_app))
 // console.log("___")
-// console.log(printTree(ref_app))
+// console.log(printTree(ref_app)
 // NOW WE CAN EVALUATE BOTH EXPRESSIONS
 // FIRST EVALUATE THE REFERENCE
 let ref_root = ref_app;
