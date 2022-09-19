@@ -41,9 +41,11 @@ const codestyle = {
 };
 const student_file = process_1.argv[2];
 const ref_file = process_1.argv[3];
-const args = process_1.argv.slice(4);
+const [recursive, args] = process_1.argv[4] === "-rec" ? [true, process_1.argv.slice(5)] : [false, process_1.argv.slice(4)];
 const student_expr = (0, fs_1.readFileSync)(student_file).toString();
 const ref_expr = (0, fs_1.readFileSync)(ref_file).toString();
+const y_comb = "Y";
+const y_ast = Parser.parse((0, lexer_1.tokenize)(y_comb, codestyle), macromap);
 var student_ast = null; // stupid hack for stupid error handling in JS
 try {
     student_ast = Parser.parse((0, lexer_1.tokenize)(student_expr, codestyle), macromap);
@@ -60,8 +62,15 @@ const args_ast = args.map(expr => {
     return ast;
 });
 // NOW WE MOVE ON TO BUILDING AN APPLICATION
-const student_app = args_ast.reduce((lambda, arg) => new ast_1.Application(lambda, arg), student_ast);
-const ref_app = args_ast.reduce((lambda, arg) => new ast_1.Application(lambda, arg), ref_ast);
+const student_app_arr = recursive ? [y_ast, student_ast, ...args_ast] : [student_ast, ...args_ast];
+const [student_head, ...student_tail] = student_app_arr;
+const student_app = student_tail.reduce((lambda, arg) => new ast_1.Application(lambda, arg), student_head);
+const ref_app_arr = recursive ? [y_ast, ref_ast, ...args_ast] : [ref_ast, ...args_ast];
+const [ref_head, ...ref_tail] = ref_app_arr;
+const ref_app = ref_tail.reduce((lambda, arg) => new ast_1.Application(lambda, arg), ref_head);
+// console.log(printTree(student_app))
+// console.log("___")
+// console.log(printTree(ref_app))
 // NOW WE CAN EVALUATE BOTH EXPRESSIONS
 // FIRST EVALUATE THE REFERENCE
 let ref_root = ref_app;

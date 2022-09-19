@@ -1,1 +1,1 @@
-(λ a b . a)
+(λ f m . ZERO m 1 (* m (SUCC m)))

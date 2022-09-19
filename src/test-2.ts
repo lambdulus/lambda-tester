@@ -3,7 +3,7 @@ import { argv, exit } from 'process'
 
 import { None } from './reductions'
 import { NormalEvaluator, Evaluator } from './evaluators'
-import { AST, Application } from './ast'
+import { AST, Application, Macro } from './ast'
 import * as Parser from './parser'
 import { CodeStyle, tokenize } from './lexer'
 import { BasicPrinter } from './visitors/basicprinter'
@@ -24,10 +24,13 @@ const codestyle : CodeStyle = {
 
 const student_file = argv[2]
 const ref_file = argv[3]
-const args = argv.slice(4)
+const [recursive, args] = argv[4] === "-rec" ? [true, argv.slice(5)] : [false, argv.slice(4)]
 
 const student_expr = readFileSync(student_file).toString()
 const ref_expr = readFileSync(ref_file).toString()
+
+const y_comb = "Y"
+const y_ast = Parser.parse(tokenize(y_comb, codestyle), macromap)
 
 
 var student_ast : AST = null as unknown as AST // stupid hack for stupid error handling in JS
@@ -50,10 +53,18 @@ const args_ast = args.map(
 
 
 // NOW WE MOVE ON TO BUILDING AN APPLICATION
+const student_app_arr = recursive ? [y_ast, student_ast, ...args_ast] : [student_ast, ...args_ast]
+const [student_head, ...student_tail] = student_app_arr
+const student_app = student_tail.reduce((lambda, arg) => new Application(lambda, arg), student_head)
 
-const student_app = args_ast.reduce((lambda, arg) => new Application(lambda, arg), student_ast)
 
-const ref_app = args_ast.reduce((lambda, arg) => new Application(lambda, arg), ref_ast)
+const ref_app_arr = recursive ? [y_ast, ref_ast, ...args_ast] : [ref_ast, ...args_ast]
+const [ref_head, ...ref_tail] = ref_app_arr
+const ref_app = ref_tail.reduce((lambda, arg) => new Application(lambda, arg), ref_head)
+
+// console.log(printTree(student_app))
+// console.log("___")
+// console.log(printTree(ref_app))
 
 
 // NOW WE CAN EVALUATE BOTH EXPRESSIONS
