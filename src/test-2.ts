@@ -64,7 +64,7 @@ const ref_app = ref_tail.reduce((lambda, arg) => new Application(lambda, arg), r
 
 // console.log(printTree(student_app))
 // console.log("___")
-// console.log(printTree(ref_app))
+// console.log(printTree(ref_app)
 
 
 // NOW WE CAN EVALUATE BOTH EXPRESSIONS
