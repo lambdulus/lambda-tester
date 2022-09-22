@@ -75,24 +75,38 @@ const ref_app = ref_tail.reduce((lambda, arg) => new ast_1.Application(lambda, a
 // FIRST EVALUATE THE REFERENCE
 let ref_root = ref_app;
 let ref_steps = 0;
-while (true) {
-    const evaluator = new evaluators_1.NormalEvaluator(ref_root);
-    if (evaluator.nextReduction instanceof reductions_1.None) {
-        break;
+try {
+    while (true) {
+        const evaluator = new evaluators_1.NormalEvaluator(ref_root);
+        if (evaluator.nextReduction instanceof reductions_1.None) {
+            break;
+        }
+        ref_root = evaluator.perform();
+        ref_steps++;
     }
-    ref_root = evaluator.perform();
-    ref_steps++;
+}
+catch (error) {
+    console.error(`Failure of the testing sub-system. Send us an email, this is probably some sort of a bug.`);
+    (0, process_1.exit)(1);
 }
 // THEN EVALUATE STUDENT'S
 let student_root = student_app;
 let student_steps = 0;
-while (true) {
-    const evaluator = new evaluators_1.NormalEvaluator(student_root);
-    if (evaluator.nextReduction instanceof reductions_1.None) {
-        break;
+try {
+    while (true) {
+        const evaluator = new evaluators_1.NormalEvaluator(student_root);
+        if (evaluator.nextReduction instanceof reductions_1.None) {
+            break;
+        }
+        student_root = evaluator.perform(); // perform next reduction
+        student_steps++;
     }
-    student_root = evaluator.perform(); // perform next reduction
-    student_steps++;
+}
+catch (error) {
+    // studentovo reseni zpusobylo runtime error
+    // pravdepodobne stack overflow
+    console.error(`Failure of the testing sub-system. Maybe your expression results in infinite recursion?`);
+    (0, process_1.exit)(1);
 }
 // NOW I COMPARE BOTH RESULTS
 const comparator = new comparator_1.TreeComparator([ref_root, student_root], [macromap, macromap]);
@@ -105,9 +119,9 @@ if (comparator.equals) {
 }
 else {
     // the results do not match!
-    console.log("Your solution does not pass the test.");
+    // console.log("Your solution does not pass the test.")
     console.log(`reference: ${printTree(ref_root)}`);
-    console.log(`student: ${printTree(student_root)}`);
+    console.log(`student:   ${printTree(student_root)}`);
     (0, process_1.exit)(1);
 }
 function printTree(tree) {
