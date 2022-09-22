@@ -1,1 +1,1 @@
-(λ f m . ZERO m 1 (* m (SUCC m)))
+(λ f m . ZERO m 1 (* m (f (PRED m))))

@@ -74,35 +74,49 @@ const ref_app = ref_tail.reduce((lambda, arg) => new Application(lambda, arg), r
 let ref_root = ref_app
 let ref_steps = 0
 
-while (true) {
-  const evaluator : Evaluator = new NormalEvaluator(ref_root)
-
-  if (evaluator.nextReduction instanceof None) {
-    break
+try {
+  while (true) {
+    const evaluator : Evaluator = new NormalEvaluator(ref_root)
+  
+    if (evaluator.nextReduction instanceof None) {
+      break
+    }
+  
+    ref_root = evaluator.perform()
+  
+    ref_steps++
   }
-
-  ref_root = evaluator.perform()
-
-  ref_steps++
+} catch (error) {
+  console.error(`Failure of the testing sub-system. Send us an email, this is probably some sort of a bug.`)
+  exit(1)
 }
+
 
 
 // THEN EVALUATE STUDENT'S
-
 let student_root = student_app
 let student_steps = 0
 
-while (true) {
-  const evaluator : Evaluator = new NormalEvaluator(student_root)
-
-  if (evaluator.nextReduction instanceof None) {
-    break
+try {  
+  while (true) {
+    const evaluator : Evaluator = new NormalEvaluator(student_root)
+  
+    if (evaluator.nextReduction instanceof None) {
+      break
+    }
+  
+    student_root = evaluator.perform() // perform next reduction
+  
+    student_steps++
   }
-
-  student_root = evaluator.perform() // perform next reduction
-
-  student_steps++
+} catch (error) {
+  // studentovo reseni zpusobylo runtime error
+  // pravdepodobne stack overflow
+  console.error(`Failure of the testing sub-system. Maybe your expression results in infinite recursion?`)
+  exit(1)
+  
 }
+
 
 
 // NOW I COMPARE BOTH RESULTS
@@ -118,10 +132,10 @@ if (comparator.equals) {
 }
 else {
   // the results do not match!
-  console.log("Your solution does not pass the test.")
+  // console.log("Your solution does not pass the test.")
 
   console.log(`reference: ${printTree(ref_root)}`)
-  console.log(`student: ${printTree(student_root)}`)
+  console.log(`student:   ${printTree(student_root)}`)
   exit(1)
 }
 
