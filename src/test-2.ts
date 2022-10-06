@@ -126,7 +126,7 @@ const comparator : TreeComparator = new TreeComparator([ref_root, student_root],
 if (comparator.equals) {
   // everything is OK
   if (student_steps > 2 * ref_steps) {
-    console.log("Your solution takes at least two times as many steps to evaluate! You might want to think about why that might be.")
+    console.log("Your solution takes at least two times as many steps to evaluate than the reference solution! You might want to think about why that might be.")
   }
   exit(0)
 }
