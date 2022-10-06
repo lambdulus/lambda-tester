@@ -35,13 +35,14 @@ export class NormalEvaluator extends ASTVisitor {
   }
 
   onApplication (application : Application) : void {
-    if (application.left instanceof Variable) {
-      this.parent = application
-      this.child = Child.Right
-      application.right.visit(this)
-    }
+    // if (application.left instanceof Variable) {
+    //   this.parent = application
+    //   this.child = Child.Right
+    //   application.right.visit(this)
+    // }
 
-    else if (application.left instanceof Lambda) {
+    // else
+    if (application.left instanceof Lambda) {
       const freeVarsFinder : FreeVarsFinder = new FreeVarsFinder(application.right)
       const freeVars : Set<string> = freeVarsFinder.freeVars
 
@@ -56,7 +57,10 @@ export class NormalEvaluator extends ASTVisitor {
       }
     }
 
-    // (this.left instanceof Macro || this.left instanceof ChurchNumeral || this.left instanceof Application)
+    // (this.left instanceof Variable ||
+    // this.left instanceof Macro ||
+    // this.left instanceof ChurchNumeral ||
+    // this.left instanceof Application)
     else {
       this.parent = application
       this.child = Child.Left
@@ -73,6 +77,7 @@ export class NormalEvaluator extends ASTVisitor {
   }
   
   onLambda (lambda : Lambda) : void {
+    // check for eta reduction
     if (lambda.right instanceof Application
         &&
         lambda.right.right instanceof Variable
@@ -102,7 +107,7 @@ export class NormalEvaluator extends ASTVisitor {
   }
 
   onVariable (variable : Variable) : void {
-    // this.nextReduction = new None
+    this.nextReduction = new None
   }
 
   perform () : AST {
