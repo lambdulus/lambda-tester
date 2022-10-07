@@ -76,7 +76,7 @@ let ref_steps = 0
 
 try {
   while (true) {
-    const evaluator : Evaluator = new NormalEvaluator(ref_root)
+    const evaluator : Evaluator = new NormalEvaluator(ref_root.clone())
   
     if (evaluator.nextReduction instanceof None) {
       break
@@ -99,7 +99,7 @@ let student_steps = 0
 
 try {  
   while (true) {
-    const evaluator : Evaluator = new NormalEvaluator(student_root)
+    const evaluator : Evaluator = new NormalEvaluator(student_root.clone())
   
     if (evaluator.nextReduction instanceof None) {
       break
