@@ -1,1 +1,1 @@
-(λ f m . ZERO m 1 (* m (f (PRED m))))
+(λ a b . g a a b) ( (λ k l . k k l) (λ i . i) o ) d

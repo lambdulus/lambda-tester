@@ -87,7 +87,7 @@ let student_prev = S0;
 // ted se vleze do cyklu
 while (STEPS) {
     // identifikuju nasledujici krok pro referenci
-    const evaluator = new_evaluator(reference_prev);
+    const evaluator = new_evaluator(reference_prev.clone());
     if (lines_student.length === 0) {
         // student skoncil, ale je treba se ujistit, ze reference ma taky None, nebo Etu - tu nebereme nutne jako nutnou udelat
         if (evaluator.nextReduction instanceof reductions_1.None) {
@@ -114,11 +114,11 @@ while (STEPS) {
         // tak jenom pro jistotu zkontroluju, ze to neni jenom alpha conversion
         // pokud ano, posunu se dal, pro pripad, ze by jich tady bylo vic
         if (equal(expand(student_prev), student_expanded)) {
-            student_prev = student_next;
+            student_prev = student_next.clone();
             continue;
         }
         // nebo jeste zkusim najit eta redukci
-        const optimizer = new evaluators_1.OptimizeEvaluator(reference_prev);
+        const optimizer = new evaluators_1.OptimizeEvaluator(reference_prev.clone());
         if (optimizer.nextReduction instanceof reductions_1.Eta) {
             // pokud najdu --> provedu, expanduju a porovnam
             const optimized = optimizer.perform();
@@ -126,15 +126,15 @@ while (STEPS) {
             if (equal(expanded, student_expanded)) {
                 // to co student udela byla Eta
                 // ta se NEpocita jako krok -> takze zadny STEPS--
-                reference_prev = optimized;
-                student_prev = student_next;
+                reference_prev = optimized.clone();
+                student_prev = student_next.clone();
                 continue;
             }
             else {
                 // nesouhlasi, urcite to neni jenom alfa (to uz jsem kontroloval)
                 // ja jsem udelal etu a student udelal neco, co neni eta tam kde bych ji udelal ja
                 // dam chybu
-                console.log(`Your step "${student_next_str}" is not correct. Hint: Check the previous step and see if it is in the Normal Form.`);
+                console.log(`Your step "${student_next_str}" is not correct. Hint: Check the previous step and see if it is in the Normal Form already.`);
                 (0, process_1.exit)(1);
             }
         }
@@ -151,8 +151,8 @@ while (STEPS) {
         if (equal(NR_expanded, student_expanded)) {
             // pokud se rovnaji
             // ok
-            reference_prev = next_ref;
-            student_prev = student_next;
+            reference_prev = next_ref.clone();
+            student_prev = student_next.clone();
             STEPS--;
             continue;
         }
@@ -167,7 +167,7 @@ while (STEPS) {
                 // a studentuv ten predchozi (takze se ten studentuv soucasny bude delat znova v dalsi iteraci)
                 // tenhle krok nepocitam
                 lines_student.unshift(student_next_str);
-                reference_prev = next_ref;
+                reference_prev = next_ref.clone();
                 continue;
             }
             else {
@@ -177,9 +177,9 @@ while (STEPS) {
             }
         }
     }
-    // pokud reference nasla alpha nebo beta redex:
+    // pokud reference nasla alpha nebo beta nebo eta redex:
     if (evaluator.nextReduction instanceof reductions_1.Alpha || evaluator.nextReduction instanceof reductions_1.Beta || evaluator.nextReduction instanceof reductions_1.Eta) {
-        // stroj dela alpha conversion nebo beta reduction
+        // stroj dela alpha conversion nebo beta nebo eta reduction
         // provedu ji, expanduju
         const next_ref = evaluator.perform();
         const NR_expanded = expand(next_ref);
@@ -189,8 +189,8 @@ while (STEPS) {
         // porovnam novy stav reference a novy krok studenta
         if (equal(NR_expanded, student_expanded)) {
             // pokud jsou stejne --> OK, jdu dal
-            reference_prev = next_ref;
-            student_prev = student_next;
+            reference_prev = next_ref.clone();
+            student_prev = student_next.clone();
             STEPS--;
             continue;
         }
@@ -204,7 +204,7 @@ while (STEPS) {
                 // a referencni krok nezmenim
                 // v pristi iteraci se znova reference posune o jeden krok dopredu (ten co uz jsem videl) a student se posune nekam, kam jsem jeste nevidel
                 // tim se umozni preskocit to co udelal zbytecne
-                student_prev = student_next;
+                student_prev = student_next.clone();
                 continue;
             }
             // rozdil mezi etou a betou (pokud jde udelat beta) nejde poznat, takze bych to tim krokem nahore pokryl
