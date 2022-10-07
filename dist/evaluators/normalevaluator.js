@@ -27,12 +27,13 @@ class NormalEvaluator extends visitors_1.ASTVisitor {
         this.reducer = (0, reducers_1.constructFor)(tree, this.nextReduction);
     }
     onApplication(application) {
-        if (application.left instanceof ast_1.Variable) {
-            this.parent = application;
-            this.child = ast_1.Child.Right;
-            application.right.visit(this);
-        }
-        else if (application.left instanceof ast_1.Lambda) {
+        // if (application.left instanceof Variable) {
+        //   this.parent = application
+        //   this.child = Child.Right
+        //   application.right.visit(this)
+        // }
+        // else
+        if (application.left instanceof ast_1.Lambda) {
             const freeVarsFinder = new freevarsfinder_1.FreeVarsFinder(application.right);
             const freeVars = freeVarsFinder.freeVars;
             const boundingFinder = new boundingfinder_1.BoundingFinder(application.left, freeVars);
@@ -44,7 +45,10 @@ class NormalEvaluator extends visitors_1.ASTVisitor {
                 this.nextReduction = new reductions_1.Beta(application, this.parent, this.child, application.left.body, application.left.argument.name(), application.right);
             }
         }
-        // (this.left instanceof Macro || this.left instanceof ChurchNumeral || this.left instanceof Application)
+        // (this.left instanceof Variable ||
+        // this.left instanceof Macro ||
+        // this.left instanceof ChurchNumeral ||
+        // this.left instanceof Application)
         else {
             this.parent = application;
             this.child = ast_1.Child.Left;
@@ -57,6 +61,7 @@ class NormalEvaluator extends visitors_1.ASTVisitor {
         }
     }
     onLambda(lambda) {
+        // check for eta reduction
         if (lambda.right instanceof ast_1.Application
             &&
                 lambda.right.right instanceof ast_1.Variable
@@ -79,7 +84,7 @@ class NormalEvaluator extends visitors_1.ASTVisitor {
         this.nextReduction = new reductions_1.Expansion(this.parent, this.child, macro);
     }
     onVariable(variable) {
-        // this.nextReduction = new None
+        this.nextReduction = new reductions_1.None;
     }
     perform() {
         this.reducer.perform();

@@ -80,7 +80,7 @@ let student_prev : AST = S0
 // ted se vleze do cyklu
 while (STEPS) {
   // identifikuju nasledujici krok pro referenci
-  const evaluator : Evaluator = new_evaluator(reference_prev)
+  const evaluator : Evaluator = new_evaluator(reference_prev.clone())
 
   if (lines_student.length === 0) {
     // student skoncil, ale je treba se ujistit, ze reference ma taky None, nebo Etu - tu nebereme nutne jako nutnou udelat
@@ -105,18 +105,17 @@ while (STEPS) {
   const student_next : AST = try_parse(student_next_str)
   const student_expanded : AST = expand(student_next)
 
-
   // pokud reference nema zadny dalsi krok, ale student ma
   if (evaluator.nextReduction instanceof None) {
     // tak jenom pro jistotu zkontroluju, ze to neni jenom alpha conversion
     // pokud ano, posunu se dal, pro pripad, ze by jich tady bylo vic
     if (equal(expand(student_prev), student_expanded)) {
-      student_prev = student_next
+      student_prev = student_next.clone()
       continue
     }
 
     // nebo jeste zkusim najit eta redukci
-    const optimizer : OptimizeEvaluator = new OptimizeEvaluator(reference_prev)
+    const optimizer : OptimizeEvaluator = new OptimizeEvaluator(reference_prev.clone())
     if (optimizer.nextReduction instanceof Eta) {
       // pokud najdu --> provedu, expanduju a porovnam
       const optimized : AST = optimizer.perform()
@@ -125,15 +124,15 @@ while (STEPS) {
       if (equal(expanded, student_expanded)) {
         // to co student udela byla Eta
         // ta se NEpocita jako krok -> takze zadny STEPS--
-        reference_prev = optimized
-        student_prev = student_next
+        reference_prev = optimized.clone()
+        student_prev = student_next.clone()
         continue
       }
       else {
         // nesouhlasi, urcite to neni jenom alfa (to uz jsem kontroloval)
         // ja jsem udelal etu a student udelal neco, co neni eta tam kde bych ji udelal ja
         // dam chybu
-        console.log(`Your step "${student_next_str}" is not correct. Hint: Check the previous step and see if it is in the Normal Form.`)
+        console.log(`Your step "${student_next_str}" is not correct. Hint: Check the previous step and see if it is in the Normal Form already.`)
         exit(1)
       }
     }
@@ -154,8 +153,8 @@ while (STEPS) {
     if (equal(NR_expanded, student_expanded)) {
       // pokud se rovnaji
       // ok
-      reference_prev = next_ref
-      student_prev = student_next
+      reference_prev = next_ref.clone()
+      student_prev = student_next.clone()
       STEPS--
       continue
     }
@@ -171,7 +170,7 @@ while (STEPS) {
         // a studentuv ten predchozi (takze se ten studentuv soucasny bude delat znova v dalsi iteraci)
         // tenhle krok nepocitam
         lines_student.unshift(student_next_str)
-        reference_prev = next_ref
+        reference_prev = next_ref.clone()
         continue
       }
       else {
@@ -182,9 +181,9 @@ while (STEPS) {
     }
   }
 
-  // pokud reference nasla alpha nebo beta redex:
+  // pokud reference nasla alpha nebo beta nebo eta redex:
   if (evaluator.nextReduction instanceof Alpha || evaluator.nextReduction instanceof Beta || evaluator.nextReduction instanceof Eta) {
-    // stroj dela alpha conversion nebo beta reduction
+    // stroj dela alpha conversion nebo beta nebo eta reduction
     // provedu ji, expanduju
     const next_ref : AST = evaluator.perform()
     const NR_expanded : AST = expand(next_ref)
@@ -196,8 +195,8 @@ while (STEPS) {
     // porovnam novy stav reference a novy krok studenta
     if (equal(NR_expanded, student_expanded)) {
       // pokud jsou stejne --> OK, jdu dal
-      reference_prev = next_ref
-      student_prev = student_next
+      reference_prev = next_ref.clone()
+      student_prev = student_next.clone()
       STEPS--
       continue
     }
@@ -211,7 +210,7 @@ while (STEPS) {
         // a referencni krok nezmenim
         // v pristi iteraci se znova reference posune o jeden krok dopredu (ten co uz jsem videl) a student se posune nekam, kam jsem jeste nevidel
         // tim se umozni preskocit to co udelal zbytecne
-        student_prev = student_next
+        student_prev = student_next.clone()
         continue
       }
 
@@ -244,6 +243,7 @@ while (STEPS) {
       // 3) student ma chybu
       // to se pozna tak, ze ani jedna z predchozich moznosti neni platna
       console.log(`Your step "${student_next_str}" is not correct.`)
+      
       exit(1)
     }
   }

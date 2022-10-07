@@ -1,1 +1,10 @@
-(\ x y . y)
+(\ a b . g a a b ) ( (\ k l . k k l ) (\ i . i ) o ) d
+(\ a b . g a a b ) ( (\ l . (\ i . i ) (\ i . i ) l ) o ) d
+(\ a b . g a a b ) ( ((\ i . i ) (\ i . i ) o )) d
+(\ a b . g a a b ) ( (\ i . i ) (\ i . i ) o ) d
+(\ a b . g a a b ) ( (\ i . i ) o ) d
+(\ a b . g a a b ) ( o ) d
+(\ a b . g a a b ) o  d
+(\ b . g o o b ) d
+( g o o d )
+g o o d 
