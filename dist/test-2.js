@@ -77,7 +77,7 @@ let ref_root = ref_app;
 let ref_steps = 0;
 try {
     while (true) {
-        const evaluator = new evaluators_1.NormalEvaluator(ref_root);
+        const evaluator = new evaluators_1.NormalEvaluator(ref_root.clone());
         if (evaluator.nextReduction instanceof reductions_1.None) {
             break;
         }
@@ -94,7 +94,7 @@ let student_root = student_app;
 let student_steps = 0;
 try {
     while (true) {
-        const evaluator = new evaluators_1.NormalEvaluator(student_root);
+        const evaluator = new evaluators_1.NormalEvaluator(student_root.clone());
         if (evaluator.nextReduction instanceof reductions_1.None) {
             break;
         }
