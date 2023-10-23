@@ -41,7 +41,9 @@ const codestyle = {
 };
 const student_file = process_1.argv[2];
 const ref_file = process_1.argv[3];
-const [recursive, args] = process_1.argv[4] === "-rec" ? [true, process_1.argv.slice(5)] : [false, process_1.argv.slice(4)];
+const rec = process_1.argv[4] === "-rec";
+const app = process_1.argv[4] === "-app";
+const [recursive, applicative, args] = rec || app ? [rec, app, process_1.argv.slice(5)] : [false, false, process_1.argv.slice(4)];
 const student_expr = (0, fs_1.readFileSync)(student_file).toString();
 const ref_expr = (0, fs_1.readFileSync)(ref_file).toString();
 const y_comb = "Y";
@@ -77,7 +79,7 @@ let ref_root = ref_app;
 let ref_steps = 0;
 try {
     while (true) {
-        const evaluator = new evaluators_1.NormalEvaluator(ref_root.clone());
+        const evaluator = app ? new evaluators_1.ApplicativeEvaluator(ref_root.clone()) : new evaluators_1.NormalEvaluator(ref_root.clone());
         if (evaluator.nextReduction instanceof reductions_1.None) {
             break;
         }
@@ -94,7 +96,7 @@ let student_root = student_app;
 let student_steps = 0;
 try {
     while (true) {
-        const evaluator = new evaluators_1.NormalEvaluator(student_root.clone());
+        const evaluator = app ? new evaluators_1.ApplicativeEvaluator(student_root.clone()) : new evaluators_1.NormalEvaluator(student_root.clone());
         if (evaluator.nextReduction instanceof reductions_1.None) {
             break;
         }

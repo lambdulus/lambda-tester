@@ -1,5 +1,5 @@
 import { AST, MacroMap } from "../index";
-declare type Pair<T> = [T, T];
+type Pair<T> = [T, T];
 export declare class TreeComparator {
     readonly roots: Pair<AST>;
     readonly macrotables: Pair<MacroMap>;
