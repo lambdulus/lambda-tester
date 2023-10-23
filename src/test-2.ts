@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import { argv, exit } from 'process'
 
 import { None } from './reductions'
-import { NormalEvaluator, Evaluator } from './evaluators'
+import { NormalEvaluator, Evaluator, ApplicativeEvaluator } from './evaluators'
 import { AST, Application, Macro } from './ast'
 import * as Parser from './parser'
 import { CodeStyle, tokenize } from './lexer'
@@ -24,7 +24,9 @@ const codestyle : CodeStyle = {
 
 const student_file = argv[2]
 const ref_file = argv[3]
-const [recursive, args] = argv[4] === "-rec" ? [true, argv.slice(5)] : [false, argv.slice(4)]
+const rec = argv[4] === "-rec"
+const app = argv[4] === "-app"
+const [recursive, applicative, args] = rec || app ? [rec, app, argv.slice(5)] : [false, false, argv.slice(4)]
 
 const student_expr = readFileSync(student_file).toString()
 const ref_expr = readFileSync(ref_file).toString()
@@ -76,7 +78,7 @@ let ref_steps = 0
 
 try {
   while (true) {
-    const evaluator : Evaluator = new NormalEvaluator(ref_root.clone())
+    const evaluator : Evaluator = app ? new ApplicativeEvaluator(ref_root.clone()) : new NormalEvaluator(ref_root.clone())
   
     if (evaluator.nextReduction instanceof None) {
       break
@@ -99,7 +101,7 @@ let student_steps = 0
 
 try {  
   while (true) {
-    const evaluator : Evaluator = new NormalEvaluator(student_root.clone())
+    const evaluator : Evaluator = app ? new ApplicativeEvaluator(student_root.clone()) : new NormalEvaluator(student_root.clone())
   
     if (evaluator.nextReduction instanceof None) {
       break

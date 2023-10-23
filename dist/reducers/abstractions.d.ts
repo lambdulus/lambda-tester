@@ -1,6 +1,6 @@
 import { AST } from "../ast";
-export declare type AlowedTypes = Array<any>;
-export declare type ArgumentConstraints = Array<AlowedTypes>;
+export type AlowedTypes = Array<any>;
+export type ArgumentConstraints = Array<AlowedTypes>;
 export declare class Abstractions {
     private static knownAbstractions;
     static has(name: string): boolean;

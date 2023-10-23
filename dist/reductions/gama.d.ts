@@ -1,6 +1,6 @@
 import { ASTReduction, ASTReductionType } from ".";
 import { Binary, Child, AST, Macro, Application } from "../ast";
-export declare type arity = number;
+export type arity = number;
 export declare class Gama implements ASTReduction {
     readonly redexes: Array<Macro | Application>;
     readonly args: Array<AST>;

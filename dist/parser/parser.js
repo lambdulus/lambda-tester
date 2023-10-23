@@ -5,14 +5,14 @@ const lexer_1 = require("../lexer");
 const _1 = require("./");
 const ast_1 = require("../ast");
 class Parser {
+    isMacro(token) {
+        return token.value in this.macroTable;
+    }
     constructor(tokens, macroTable) {
         this.tokens = tokens;
         this.macroTable = macroTable;
         this.position = 0;
         this.openSubexpressions = 0;
-    }
-    isMacro(token) {
-        return token.value in this.macroTable;
     }
     top() {
         return this.tokens[this.position];

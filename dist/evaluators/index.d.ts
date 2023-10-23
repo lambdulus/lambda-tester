@@ -6,4 +6,4 @@ export { NormalEvaluator } from './normalevaluator';
 export { ApplicativeEvaluator } from './applicativeevaluator';
 export { OptimizeEvaluator } from './optimizeevaluator';
 export { NormalAbstractionEvaluator } from './normalabstractionevaluator';
-export declare type Evaluator = NormalEvaluator | ApplicativeEvaluator | OptimizeEvaluator | NormalAbstractionEvaluator;
+export type Evaluator = NormalEvaluator | ApplicativeEvaluator | OptimizeEvaluator | NormalAbstractionEvaluator;

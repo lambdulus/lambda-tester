@@ -4,12 +4,6 @@ exports.BasicPrinter = void 0;
 const ast_1 = require("../ast");
 const _1 = require(".");
 class BasicPrinter extends _1.ASTVisitor {
-    constructor(tree) {
-        super();
-        this.tree = tree;
-        this.expression = '';
-        this.tree.visit(this);
-    }
     printMultilambda(lambda, accumulator) {
         if (lambda.body instanceof ast_1.Lambda) {
             this.printMultilambda(lambda.body, `${accumulator} ${lambda.body.argument.name()}`);
@@ -18,6 +12,12 @@ class BasicPrinter extends _1.ASTVisitor {
             this.expression += accumulator + ` . `;
             lambda.body.visit(this);
         }
+    }
+    constructor(tree) {
+        super();
+        this.tree = tree;
+        this.expression = '';
+        this.tree.visit(this);
     }
     print() {
         return this.expression;
