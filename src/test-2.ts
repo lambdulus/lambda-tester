@@ -47,7 +47,7 @@ try {
 const ref_ast = Parser.parse(tokenize(ref_expr, codestyle), macromap) // I do not expect reference file to fail to parse
 
 const args_ast = args.map(
-  expr => {
+  (expr : string) => {
     const tokens = tokenize(expr, codestyle)
     const ast : AST = Parser.parse(tokens, macromap) // I also do not expect the arguments from the cmd line to fail to parse
     return ast
