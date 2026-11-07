@@ -214,6 +214,16 @@ while (STEPS) {
         continue
       }
 
+      if (equal(NR_expanded, expand(reference_prev))) {
+        // 2) reference udelala jen alpha conversion, kterou student uz udelal nekdy drive
+        // (student prejmenovava dopredu, reference az tesne pred betou)
+        // --> referenci posunu, studentuv krok vratim a v dalsi iteraci ho porovnam znova
+        // tenhle krok nepocitam
+        lines_student.unshift(student_next_str)
+        reference_prev = next_ref.clone()
+        continue
+      }
+
       // rozdil mezi etou a betou (pokud jde udelat beta) nejde poznat, takze bych to tim krokem nahore pokryl
       // const optimizer : OptimizeEvaluator = new OptimizeEvaluator(reference_prev)
       // if (optimizer.nextReduction instanceof Eta) {
